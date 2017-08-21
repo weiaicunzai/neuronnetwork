@@ -54,7 +54,8 @@ void net::generate_weights_of_all_layers(shared_ptr<weight> initialized_weights,
 {
     for (vector<int>::const_iterator iter = sizes.begin(); iter != sizes.end() - 1; iter++)
     {
-        array<size_t, 2> single_weight_block_sequence = {*iter, *(iter + 1)};
+        //array<size_t, 2> single_weight_block_sequence = {*iter, *(iter + 1)};
+        array<size_t, 2> single_weight_block_sequence = {*(iter + 1), *iter};
         multi_array<double, 2> single_weight_block(single_weight_block_sequence);
         generate_weights_of_single_layer(single_weight_block, single_weight_block.shape());
         initialized_weights->push_back(single_weight_block);
@@ -90,14 +91,60 @@ void net::stochastic_gradient_descent(shared_ptr<training_data_container> traini
     
 }
 
+// mini_batch.size() = 10
 void net::update_mini_batch(mini_batch_container &mini_batch, const double &eta)
 {
-    cout << "init_nabla_b" << endl;
     biase nabla_b = *init_nabla_b();
-    cout << "init_nabla_w" << endl;
     weight nabla_w = *init_nabla_w();
+    for (mini_batch_container::iterator img_label_pair_index = mini_batch.begin();
+         img_label_pair_index != mini_batch.end();
+         img_label_pair_index++)
+    {
+        back_prop((*img_label_pair_index).get<0>(), (*img_label_pair_index).get<1>());
+
+    }
+}
+
+// convert array784d to vector
+void net::back_prop(const array784d &img, const array10i &label)
+{
+    biase nabla_b = *init_nabla_b();
+    weight nabla_w = *init_nabla_w();
+    vector<double> activation(img.begin(), img.end());
+    vector<vector<double> > activations(1, activation);
+    assert(nabla_b.size() == nabla_w.size());
+    const int layer_num = nabla_b.size();
+    for (int layer_index = 0; layer_index < layer_num; layer_index++)
+    {
+        multi_array<double, 1> b = this->biases->at(layer_index);
+        multi_array<double, 2> w = this->weights->at(layer_index);
+         //w * a + b
+        get_z(w, activation, b);
+    }
+    
+}
+
+shared_ptr<vector<int> > net::get_z(const multi_array<double, 2> &w, const vector<double> &activation, const multi_array<double, 1> &b)
+{
+    cout << w.shape()[1] << "---------------" << endl;
+    cout << activation.size() << "+++++++++++++++" << endl;
+    assert(w.shape()[1] == activation.size());
+    assert(w.shape()[0] == b.shape()[0])
+    const int biases_num = b.shape()[0];
+    const int weights_num = w.shape()[1];
+    shared_ptr<vector<int> > z;
+    for (int biases_index = 0; biases_index < biases_num; biases_index ++)
+    {
+        for(int weight_index = 0; weight_index < weights_num; weight_index++)
+        {
+            z->push_back(w[biases_index][weight_index] * );
+        }
+    }
 
 
+
+    shared_ptr<vector<int> > a(new vector<int>);
+    return a;
 }
 
 shared_ptr<biase> net::init_nabla_b()
@@ -110,8 +157,7 @@ shared_ptr<biase> net::init_nabla_b()
          single_biase_block++)
     {
         int element_num = (*single_biase_block).num_elements();
-        vector<double> index;
-        index.resize(element_num, 0.0);
+        vector<double> index(element_num, 0.0);
         (*single_biase_block).assign<vector<double>::iterator>(index.begin(), index.end());
     }
     return nabla_b;
@@ -122,17 +168,13 @@ shared_ptr<weight> net::init_nabla_w()
     shared_ptr<weight> nabla_w = make_shared<weight>();
     //deep copy
     *nabla_w = *this->weights;
-    int i = 0;
     for (weight::iterator single_weight_block = nabla_w->begin();
          single_weight_block != nabla_w->end();
          single_weight_block++)
     {
         int element_num = (*single_weight_block).num_elements();
-        //cout << element_num << endl;
-        vector<double> index;
-        index.resize(element_num, 0.0);
+        vector<double> index(element_num, 0.0);
         (*single_weight_block).assign<vector<double>::iterator>(index.begin(), index.end());
-        //cout << i++ << endl;
     }
     return nabla_w;
 }
@@ -151,7 +193,6 @@ shared_ptr<mini_batches_container> net::generate_mini_batches(const shared_ptr<t
     int mini_batch_num = training_data_num / mini_batch_size;
     shared_ptr<mini_batches_container> mini_batches =
         make_shared<mini_batches_container>();
-    //mini_batches->resize(mini_batch_num);
     for (int mini_batch_index = 0; mini_batch_index < mini_batch_num; mini_batch_index++)
     {
         mini_batch_container mini_batch = *generate_mini_batch(training_data, mini_batch_index, mini_batch_size);

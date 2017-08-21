@@ -56,6 +56,7 @@ tracking progress, but slows things down substantially.*/
  is the learning rate.*/
 
   void update_mini_batch(mini_batch_container &mini_batch, const double &eta);
+  void back_prop(const array784d &img, const array10i &label);
 
 private:
   int num_layer;
@@ -79,6 +80,10 @@ private:
 
   shared_ptr<biase> init_nabla_b();
   shared_ptr<weight> init_nabla_w();
+
+  shared_ptr<vector<int> > get_z(const multi_array<double, 2> &w,
+                                const vector<double> &activation,
+                                const multi_array<double, 1> &b);
 };
 
 #endif

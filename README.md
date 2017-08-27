@@ -9,4 +9,4 @@ C++03标准，boost1.55, 全部平台都是用gcc5以上
 可以在ubuntu16.04上编译通过，在windows7上还有问题
 
 # 进度
-正在修复windows平台下，MinGW GCC 6.3编译器没有自带byteswap.h文件的问题。
+打开debug-fixed.md以查看进度

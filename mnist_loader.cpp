@@ -16,13 +16,13 @@ mnist_loader::mnist_loader(std::string root_path)
     test_labels_file.open(test_label_path, ios::binary);
 }
 
-shared_ptr<origin_data> mnist_loader::load_data()
+boost::shared_ptr<origin_data> mnist_loader::load_data()
 {
-    shared_ptr<array1i> pixel_of_training_images = get_training_image_data();
-    shared_ptr<array1i> pixel_of_test_images = get_test_image_data();
-    shared_ptr<array1i> item_of_training_labels = get_training_label_data();
-    shared_ptr<array1i> item_of_test_labels = get_test_label_data();
-    shared_ptr<origin_data> all_data =
+    boost::shared_ptr<array1i> pixel_of_training_images = get_training_image_data();
+    boost::shared_ptr<array1i> pixel_of_test_images = get_test_image_data();
+    boost::shared_ptr<array1i> item_of_training_labels = get_training_label_data();
+    boost::shared_ptr<array1i> item_of_test_labels = get_test_label_data();
+    boost::shared_ptr<origin_data> all_data =
         make_shared<origin_data>(
             pixel_of_training_images,
             pixel_of_test_images,
@@ -32,21 +32,21 @@ shared_ptr<origin_data> mnist_loader::load_data()
     return all_data;
 }
 
-shared_ptr<wrapped_data> mnist_loader::load_data_wrapper()
+boost::shared_ptr<wrapped_data> mnist_loader::load_data_wrapper()
 {
     cout << "load_data_wrapper" << endl;
-    shared_ptr<origin_data> all_data = load_data();
-    shared_ptr<array1i> pixel_of_training_images = (*all_data).get<0>();
-    shared_ptr<array1i> pixel_of_test_images = (*all_data).get<1>();
-    shared_ptr<array1i> item_of_training_labels = (*all_data).get<2>();
-    shared_ptr<array1i> item_of_test_labels = (*all_data).get<3>();
-    shared_ptr<training_data_container> training_data = 
+    boost::shared_ptr<origin_data> all_data = load_data();
+    boost::shared_ptr<array1i> pixel_of_training_images = (*all_data).get<0>();
+    boost::shared_ptr<array1i> pixel_of_test_images = (*all_data).get<1>();
+    boost::shared_ptr<array1i> item_of_training_labels = (*all_data).get<2>();
+    boost::shared_ptr<array1i> item_of_test_labels = (*all_data).get<3>();
+    boost::shared_ptr<training_data_container> training_data = 
         get_wrapped_training_data(pixel_of_training_images, item_of_training_labels);
-    shared_ptr<validation_data_container> validation_data =
+    boost::shared_ptr<validation_data_container> validation_data =
         get_wrapped_validation_data(pixel_of_training_images, item_of_training_labels);
-    shared_ptr<test_data_container> test_data =
+    boost::shared_ptr<test_data_container> test_data =
         get_wrapped_test_data(pixel_of_test_images, item_of_test_labels);
-    shared_ptr<wrapped_data> final_data = 
+    boost::shared_ptr<wrapped_data> final_data = 
         make_shared<wrapped_data>(
             training_data,
             validation_data,
@@ -55,9 +55,9 @@ shared_ptr<wrapped_data> mnist_loader::load_data_wrapper()
     return final_data;
 }
 
-shared_ptr<array784d> mnist_loader::extract_single_image_from_original_data(shared_ptr<array1i> original_data, const int & image_index)
+boost::shared_ptr<array784d> mnist_loader::extract_single_image_from_original_data(boost::shared_ptr<array1i> original_data, const int & image_index)
 {
-    shared_ptr<array784d> single_img(new array784d);
+    boost::shared_ptr<array784d> single_img(new array784d);
     for (int row_index = 0; row_index < ROWS_NUMBER; row_index++)
         for(int col_index = 0; col_index < COLS_NUMBER; col_index++)
         //normalize the original pixel values by diving them over 255.0(double type)
@@ -67,20 +67,20 @@ shared_ptr<array784d> mnist_loader::extract_single_image_from_original_data(shar
     return single_img;
 }
 
-shared_ptr<array10i> mnist_loader::extract_single_label_from_original_data(shared_ptr<array1i> original_data, const int &label_index)
+boost::shared_ptr<array10i> mnist_loader::extract_single_label_from_original_data(boost::shared_ptr<array1i> original_data, const int &label_index)
 {
     // return a vector contains 10 elements,
     //ex. [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0] stands for 2
-    shared_ptr<array10i> single_label(new array10i);
+    boost::shared_ptr<array10i> single_label(new array10i);
     const int item = (*original_data)[label_index];
     (*single_label).assign(0);
     (*single_label).at(item) = 1;
     return single_label;
 }
 
-shared_ptr<training_data_container> mnist_loader::get_wrapped_training_data(shared_ptr<array1i> pixel_of_training_images, shared_ptr<array1i> item_of_training_labels)
+boost::shared_ptr<training_data_container> mnist_loader::get_wrapped_training_data(boost::shared_ptr<array1i> pixel_of_training_images, boost::shared_ptr<array1i> item_of_training_labels)
 {
-    shared_ptr<training_data_container> training_data(new training_data_container);
+    boost::shared_ptr<training_data_container> training_data(new training_data_container);
     for (int pair_index = 0; pair_index < TRAINING_NUMBER; pair_index++)
     {
         // can be refactored
@@ -92,9 +92,9 @@ shared_ptr<training_data_container> mnist_loader::get_wrapped_training_data(shar
     return training_data;
 }
 
-shared_ptr<validation_data_container> mnist_loader::get_wrapped_validation_data(shared_ptr<array1i> pixel_of_training_images, shared_ptr<array1i> item_of_training_labels)
+boost::shared_ptr<validation_data_container> mnist_loader::get_wrapped_validation_data(boost::shared_ptr<array1i> pixel_of_training_images, boost::shared_ptr<array1i> item_of_training_labels)
 {
-    shared_ptr<validation_data_container> validation_data(new validation_data_container);
+    boost::shared_ptr<validation_data_container> validation_data(new validation_data_container);
     for (int pair_index = TRAINING_NUMBER; pair_index < IMAGES_NUMBER; pair_index++)
     {
         (*validation_data).at(pair_index - TRAINING_NUMBER).get<0>() =
@@ -105,9 +105,9 @@ shared_ptr<validation_data_container> mnist_loader::get_wrapped_validation_data(
     return validation_data;
 }
 
-shared_ptr<test_data_container> mnist_loader::get_wrapped_test_data(shared_ptr<array1i> pixel_of_test_images, shared_ptr<array1i> item_of_test_labels)
+boost::shared_ptr<test_data_container> mnist_loader::get_wrapped_test_data(boost::shared_ptr<array1i> pixel_of_test_images, boost::shared_ptr<array1i> item_of_test_labels)
 {
-    shared_ptr<test_data_container> test_data(new test_data_container);
+    boost::shared_ptr<test_data_container> test_data(new test_data_container);
     for (int pair_index = 0; pair_index < ITEMS_NUMBER; pair_index++)
     {
         (*test_data).at(pair_index).get<0>() =
@@ -118,7 +118,7 @@ shared_ptr<test_data_container> mnist_loader::get_wrapped_test_data(shared_ptr<a
     return test_data;
 }
 
-shared_ptr<array1i> mnist_loader::get_training_image_data()
+boost::shared_ptr<array1i> mnist_loader::get_training_image_data()
 {
     load_training_image_file_header();
     check_training_image_file_header_parameters();
@@ -126,13 +126,13 @@ shared_ptr<array1i> mnist_loader::get_training_image_data()
     const int rows = image_file::get_instance().rows;
     const int image_number = image_file::get_instance().image_number;
     const int pixel_amount = cols * rows * image_number;
-    shared_ptr<array1i> pixel_of_training_images =
+    boost::shared_ptr<array1i> pixel_of_training_images =
         make_shared<array1i>(extents[pixel_amount]);
     load_all_training_images(*pixel_of_training_images);
     return pixel_of_training_images;
 }
 
-shared_ptr<array1i> mnist_loader::get_test_image_data()
+boost::shared_ptr<array1i> mnist_loader::get_test_image_data()
 {
     load_test_image_file_header();
     check_test_image_file_header_parameters();
@@ -140,29 +140,29 @@ shared_ptr<array1i> mnist_loader::get_test_image_data()
     const int rows = image_file::get_instance().rows;
     const int image_number = image_file::get_instance().image_number;
     const int pixel_amount = cols * rows * image_number;
-    shared_ptr<array1i> pixel_of_test_images = 
+    boost::shared_ptr<array1i> pixel_of_test_images = 
         make_shared<array1i>(extents[pixel_amount]);
     load_all_test_images(*pixel_of_test_images);
     return pixel_of_test_images;
 }
 
-shared_ptr<array1i> mnist_loader::get_training_label_data()
+boost::shared_ptr<array1i> mnist_loader::get_training_label_data()
 {
    load_training_label_file_header();
    check_training_label_file_header_parameters();
    const int label_number = label_file::get_instance().label_number;
-   shared_ptr<array1i> item_of_training_labels =
+   boost::shared_ptr<array1i> item_of_training_labels =
         make_shared<array1i>(extents[label_number]);
    load_all_training_labels(*item_of_training_labels);
    return item_of_training_labels;
 }
 
-shared_ptr<array1i> mnist_loader::get_test_label_data()
+boost::shared_ptr<array1i> mnist_loader::get_test_label_data()
 {
     load_test_label_file_header();
     check_test_label_file_header_parameters();
     const int label_number = label_file::get_instance().label_number;
-    shared_ptr<array1i> item_of_test_labels =
+    boost::shared_ptr<array1i> item_of_test_labels =
         make_shared<array1i>(extents[label_number]);
     load_all_test_labels(*item_of_test_labels);
     return item_of_test_labels;

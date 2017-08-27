@@ -18,7 +18,6 @@ function usually called by our neural network code.
 #include <boost/array.hpp>
 #include <iostream>
 #include <string>
-#include <byteswap.h>
 #include "parser.hpp"
 #include "label_file.hpp"
 #include "image_file.hpp"
@@ -29,17 +28,17 @@ using namespace boost::filesystem;
 using namespace boost::tuples;
 
 typedef multi_array<int, 1> array1i;
-typedef shared_ptr<array1i> p_array1i;
-typedef tuple<p_array1i, p_array1i, p_array1i, p_array1i> origin_data;
-typedef array<double, 784>  array784d;
-typedef array<int, 10>  array10i;
-typedef tuple<array784d, array10i>  img_label_pair;
-typedef array<img_label_pair, 50000> training_data_container;
-typedef array<img_label_pair, 10000> validation_data_container;
-typedef array<img_label_pair, 10000> test_data_container;
-typedef tuple<shared_ptr<training_data_container>,
-              shared_ptr<validation_data_container>,
-              shared_ptr<test_data_container> >
+typedef boost::shared_ptr<array1i> p_array1i;
+typedef boost::tuple<p_array1i, p_array1i, p_array1i, p_array1i> origin_data;
+typedef boost::array<double, 784>  array784d;
+typedef boost::array<int, 10>  array10i;
+typedef boost::tuple<array784d, array10i>  img_label_pair;
+typedef boost::array<img_label_pair, 50000> training_data_container;
+typedef boost::array<img_label_pair, 10000> validation_data_container;
+typedef boost::array<img_label_pair, 10000> test_data_container;
+typedef boost::tuple<boost::shared_ptr<training_data_container>,
+              boost::shared_ptr<validation_data_container>,
+              boost::shared_ptr<test_data_container> >
     wrapped_data;
 
 const int IMAGE_MAGICNUMBER = 2051;
@@ -144,13 +143,13 @@ class mnist_loader
     //only returns pixel or item value
     //
 
-    shared_ptr<array1i> get_training_image_data();
+    boost::shared_ptr<array1i> get_training_image_data();
 
-    shared_ptr<array1i> get_test_image_data();
+    boost::shared_ptr<array1i> get_test_image_data();
 
-    shared_ptr<array1i> get_training_label_data();
+    boost::shared_ptr<array1i> get_training_label_data();
 
-    shared_ptr<array1i> get_test_label_data();
+    boost::shared_ptr<array1i> get_test_label_data();
 
 
 
@@ -158,24 +157,24 @@ class mnist_loader
     //convert array1i to array784d * 60000
     //
 
-    shared_ptr<array784d> extract_single_image_from_original_data(shared_ptr<array1i> original_data, const int &image_index);
+    boost::shared_ptr<array784d> extract_single_image_from_original_data(boost::shared_ptr<array1i> original_data, const int &image_index);
 
 
     //
     //convert array1i to array10i * 60000
     //
 
-    shared_ptr<array10i> extract_single_label_from_original_data(shared_ptr<array1i> original_data, const int &label_index);
+    boost::shared_ptr<array10i> extract_single_label_from_original_data(boost::shared_ptr<array1i> original_data, const int &label_index);
 
     //
     // wrapper
     //
 
-    shared_ptr<training_data_container> get_wrapped_training_data(shared_ptr<array1i> pixel_of_training_images, shared_ptr<array1i> item_of_training_labels);
+    boost::shared_ptr<training_data_container> get_wrapped_training_data(boost::shared_ptr<array1i> pixel_of_training_images, boost::shared_ptr<array1i> item_of_training_labels);
 
-    shared_ptr<validation_data_container> get_wrapped_validation_data(shared_ptr<array1i> pixel_of_training_images, shared_ptr<array1i> item_of_training_labels);
+    boost::shared_ptr<validation_data_container> get_wrapped_validation_data(boost::shared_ptr<array1i> pixel_of_training_images, boost::shared_ptr<array1i> item_of_training_labels);
 
-    shared_ptr<test_data_container> get_wrapped_test_data(shared_ptr<array1i> pixel_of_test_images, shared_ptr<array1i> item_of_test_labels);
+    boost::shared_ptr<test_data_container> get_wrapped_test_data(boost::shared_ptr<array1i> pixel_of_test_images, boost::shared_ptr<array1i> item_of_test_labels);
 
 
 /*  return the original mnist data which are data extract from 
@@ -196,7 +195,7 @@ class mnist_loader
 **  test_label is simlilar, except contains only 10000 entries
 */
 
-    shared_ptr<origin_data> load_data();
+    boost::shared_ptr<origin_data> load_data();
 
 
 /*
@@ -217,7 +216,7 @@ class mnist_loader
 //  validation_data and test_data are basiclly the same, except they only
 //  have 10000 entries
 */
-    shared_ptr<wrapped_data> load_data_wrapper();
+    boost::shared_ptr<wrapped_data> load_data_wrapper();
 
     inline bool is_correct_magic_number_of_image(const int &magic_number)
     {

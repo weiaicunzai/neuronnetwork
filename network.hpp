@@ -44,11 +44,11 @@ self-explanatory.  If "test_data" is provided then the
 network will be evaluated against the test data after each
 epoch, and partial progress printed out.  This is useful for
 tracking progress, but slows things down substantially.*/
-  void stochastic_gradient_descent(shared_ptr<training_data_container> training_data,
+  void stochastic_gradient_descent(boost::shared_ptr<training_data_container> training_data,
                                    const int &epochs,
                                    const int &mini_batch_size,
                                    const double &eta,
-                                   shared_ptr<test_data_container> &test_data);
+                                   boost::shared_ptr<test_data_container> &test_data);
 
   /*Update the network's weights and biases by applying
  gradient descent using backpropagation to a single mini batch.
@@ -61,27 +61,27 @@ tracking progress, but slows things down substantially.*/
 private:
   int num_layer;
   vector<int> sizes;
-  shared_ptr<weight> weights;
-  shared_ptr<biase> biases;
-  shared_ptr<weight> init_weights(const vector<int> &sizes);
-  shared_ptr<biase> init_biases(const vector<int> &sizes);
+  boost::shared_ptr<weight> weights;
+  boost::shared_ptr<biase> biases;
+  boost::shared_ptr<weight> init_weights(const vector<int> &sizes);
+  boost::shared_ptr<biase> init_biases(const vector<int> &sizes);
 
   void generate_biases_of_single_layer(multi_array<double, 1> &single_b_block, const int &neuron_num);
-  void generate_biases_of_all_layers(shared_ptr<biase> initialized_biases, const vector<int> &sizes);
+  void generate_biases_of_all_layers(boost::shared_ptr<biase> initialized_biases, const vector<int> &sizes);
   void generate_weights_of_single_layer(multi_array<double, 2> &single_w_block, const long unsigned int *block_shape);
-  void generate_weights_of_all_layers(shared_ptr<weight> initialized_weights, const vector<int> &sizes);
+  void generate_weights_of_all_layers(boost::shared_ptr<weight> initialized_weights, const vector<int> &sizes);
 
   // see if the first img is empty (all pixel value equals to 0)
-  bool is_empty(shared_ptr<test_data_container> test_data);
-  shared_ptr<mini_batches_container> generate_mini_batches(const shared_ptr<training_data_container> training_data, const int &mini_batch_size);
-  shared_ptr<mini_batch_container> generate_mini_batch(const shared_ptr<training_data_container> training_data,
+  bool is_empty(boost::shared_ptr<test_data_container> test_data);
+  boost::shared_ptr<mini_batches_container> generate_mini_batches(const boost::shared_ptr<training_data_container> training_data, const int &mini_batch_size);
+  boost::shared_ptr<mini_batch_container> generate_mini_batch(const boost::shared_ptr<training_data_container> training_data,
                                                        const int &batch_index,
                                                        const int &mini_batch_size);
 
-  shared_ptr<biase> init_nabla_b();
-  shared_ptr<weight> init_nabla_w();
+  boost::shared_ptr<biase> init_nabla_b();
+  boost::shared_ptr<weight> init_nabla_w();
 
-  shared_ptr<vector<int> > get_z(const multi_array<double, 2> &w,
+  boost::shared_ptr<vector<int> > get_z(const multi_array<double, 2> &w,
                                 const vector<double> &activation,
                                 const multi_array<double, 1> &b);
 };

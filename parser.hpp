@@ -11,11 +11,11 @@
 
 #include <boost/multi_array.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <byteswap.h>
+#include "endian_convert.hpp"
 
-using namespace boost;
-using namespace std;
-using namespace boost::filesystem;
+//using namespace boost;
+//using namespace std;
+//using namespace boost::filesystem;
 
 namespace boostifstream = boost::filesystem;
 
@@ -41,7 +41,8 @@ public:
 
   inline static void convert_to_big_endian(int &number)
   {
-    number = bswap_32(number);
+    if(!endian_convert::is_big_endian())
+      endian_convert::byte_swap_int32(number);
   }
 };
 

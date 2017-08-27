@@ -11,14 +11,14 @@ net::net(vector<int> sizes)
    this->sizes = sizes;
 }
 
-shared_ptr<biase> net::init_biases(const vector<int> &sizes)
+boost::shared_ptr<biase> net::init_biases(const vector<int> &sizes)
 {
-    shared_ptr<biase> initialized_biases(new biase);
+    boost::shared_ptr<biase> initialized_biases(new biase);
     generate_biases_of_all_layers(initialized_biases, sizes);
     return initialized_biases;
 }
 
-void net::generate_biases_of_all_layers(shared_ptr<biase> initialized_biases, const vector<int> &sizes)
+void net::generate_biases_of_all_layers(boost::shared_ptr<biase> initialized_biases, const vector<int> &sizes)
 {
     for (vector<int>::const_iterator layer_index = sizes.begin() + 1; layer_index != sizes.end(); layer_index++)
     {
@@ -50,7 +50,7 @@ void net::generate_weights_of_single_layer(multi_array<double, 2> &single_w_bloc
             single_w_block[row_index][col_index] = num_gen::get_instance().randn();
 }
 
-void net::generate_weights_of_all_layers(shared_ptr<weight> initialized_weights, const vector<int> &sizes)
+void net::generate_weights_of_all_layers(boost::shared_ptr<weight> initialized_weights, const vector<int> &sizes)
 {
     for (vector<int>::const_iterator iter = sizes.begin(); iter != sizes.end() - 1; iter++)
     {
@@ -62,9 +62,9 @@ void net::generate_weights_of_all_layers(shared_ptr<weight> initialized_weights,
     }
 }
 
-shared_ptr<weight> net::init_weights(const vector<int> &sizes)
+boost::shared_ptr<weight> net::init_weights(const vector<int> &sizes)
 {
-    shared_ptr<weight> initialized_weights(new weight);
+    boost::shared_ptr<weight> initialized_weights(new weight);
     generate_weights_of_all_layers(initialized_weights, sizes);
     return initialized_weights;
 }
@@ -72,11 +72,11 @@ shared_ptr<weight> net::init_weights(const vector<int> &sizes)
 //replacing array with vector!
 // we need assign the dim at run time, not compile time!
 // array is really some stupid shiiit!
-void net::stochastic_gradient_descent(shared_ptr<training_data_container> training_data,
+void net::stochastic_gradient_descent(boost::shared_ptr<training_data_container> training_data,
                                       const int &epochs,
                                       const int &mini_batch_size,
                                       const double &eta,
-                                      shared_ptr<test_data_container> &test_data)
+                                      boost::shared_ptr<test_data_container> &test_data)
 {
 
     int test_num = 0;
@@ -124,7 +124,7 @@ void net::back_prop(const array784d &img, const array10i &label)
     
 }
 
-shared_ptr<vector<int> > net::get_z(const multi_array<double, 2> &w, const vector<double> &activation, const multi_array<double, 1> &b)
+boost::shared_ptr<vector<int> > net::get_z(const multi_array<double, 2> &w, const vector<double> &activation, const multi_array<double, 1> &b)
 {
     cout << w.shape()[1] << "---------------" << endl;
     cout << activation.size() << "+++++++++++++++" << endl;
@@ -132,7 +132,7 @@ shared_ptr<vector<int> > net::get_z(const multi_array<double, 2> &w, const vecto
     assert(w.shape()[0] == b.shape()[0])
     const int biases_num = b.shape()[0];
     const int weights_num = w.shape()[1];
-    shared_ptr<vector<int> > z;
+    boost::shared_ptr<vector<int> > z;
     for (int biases_index = 0; biases_index < biases_num; biases_index ++)
     {
         for(int weight_index = 0; weight_index < weights_num; weight_index++)
@@ -143,13 +143,13 @@ shared_ptr<vector<int> > net::get_z(const multi_array<double, 2> &w, const vecto
 
 
 
-    shared_ptr<vector<int> > a(new vector<int>);
+    boost::shared_ptr<vector<int> > a(new vector<int>);
     return a;
 }
 
-shared_ptr<biase> net::init_nabla_b()
+boost::shared_ptr<biase> net::init_nabla_b()
 {
-    shared_ptr<biase> nabla_b = make_shared<biase>();
+    boost::shared_ptr<biase> nabla_b = make_shared<biase>();
     //deep copy
     *nabla_b = *this->biases;
     for (biase::iterator single_biase_block = nabla_b->begin();
@@ -163,9 +163,9 @@ shared_ptr<biase> net::init_nabla_b()
     return nabla_b;
 }
 
-shared_ptr<weight> net::init_nabla_w()
+boost::shared_ptr<weight> net::init_nabla_w()
 {
-    shared_ptr<weight> nabla_w = make_shared<weight>();
+    boost::shared_ptr<weight> nabla_w = make_shared<weight>();
     //deep copy
     *nabla_w = *this->weights;
     for (weight::iterator single_weight_block = nabla_w->begin();
@@ -179,7 +179,7 @@ shared_ptr<weight> net::init_nabla_w()
     return nabla_w;
 }
 
-bool net::is_empty(shared_ptr<test_data_container> test_data)
+bool net::is_empty(boost::shared_ptr<test_data_container> test_data)
 {
     for (int pixel_index = 0; pixel_index < ROWS_NUMBER * COLS_NUMBER; pixel_index++)
         if((*test_data)[0].get<0>()[pixel_index] > 0)
@@ -187,11 +187,11 @@ bool net::is_empty(shared_ptr<test_data_container> test_data)
     return false;
 }
 
-shared_ptr<mini_batches_container> net::generate_mini_batches(const shared_ptr<training_data_container> training_data, const int &mini_batch_size)
+boost::shared_ptr<mini_batches_container> net::generate_mini_batches(const boost::shared_ptr<training_data_container> training_data, const int &mini_batch_size)
 {
     int training_data_num = (*training_data).size();
     int mini_batch_num = training_data_num / mini_batch_size;
-    shared_ptr<mini_batches_container> mini_batches =
+    boost::shared_ptr<mini_batches_container> mini_batches =
         make_shared<mini_batches_container>();
     for (int mini_batch_index = 0; mini_batch_index < mini_batch_num; mini_batch_index++)
     {
@@ -201,25 +201,25 @@ shared_ptr<mini_batches_container> net::generate_mini_batches(const shared_ptr<t
     return mini_batches;
 }
 
-shared_ptr<mini_batch_container> net::generate_mini_batch(const shared_ptr<training_data_container> training_data,
+boost::shared_ptr<mini_batch_container> net::generate_mini_batch(const boost::shared_ptr<training_data_container> training_data,
                                                           const int &batch_index,
                                                           const int &mini_batch_size)
 {
-    shared_ptr<mini_batch_container> mini_batch = 
+    boost::shared_ptr<mini_batch_container> mini_batch = 
         make_shared<mini_batch_container>();
     for (int tuple_index = 0; tuple_index < mini_batch_size; tuple_index++)
         mini_batch->push_back(training_data->at(batch_index * mini_batch_size + tuple_index));
     return mini_batch;
 }
 
-shared_ptr<tuple<shared_ptr<int>, shared_ptr<int> > > test()
+boost::shared_ptr<tuple<boost::shared_ptr<int>, boost::shared_ptr<int> > > test()
 {
 
     int a = 121;
-    shared_ptr<int> b = make_shared<int>(a);
-    shared_ptr<int> c = make_shared<int>(44);
-    tuple<shared_ptr<int> > t = make_tuple(b);
-    shared_ptr<tuple<shared_ptr<int>, shared_ptr<int> > > my_b = make_shared<tuple<shared_ptr<int>, shared_ptr<int> > >(
+    boost::shared_ptr<int> b = make_shared<int>(a);
+    boost::shared_ptr<int> c = make_shared<int>(44);
+    tuple<boost::shared_ptr<int> > t = make_tuple(b);
+    boost::shared_ptr<tuple<boost::shared_ptr<int>, boost::shared_ptr<int> > > my_b = make_shared<tuple<boost::shared_ptr<int>, boost::shared_ptr<int> > >(
         b,
         c
     );
@@ -229,14 +229,14 @@ shared_ptr<tuple<shared_ptr<int>, shared_ptr<int> > > test()
 int main()
 {
 
-// shared_ptr<vector<int> > a11(new vector<int>);
-// shared_ptr<vector<int> > b(new vector<int>);
+// boost::shared_ptr<vector<int> > a11(new vector<int>);
+// boost::shared_ptr<vector<int> > b(new vector<int>);
 // b->push_back(3);
 // b->push_back(4);
 //
 // a11 = b;
 //
-shared_ptr<tuple<shared_ptr<int>, shared_ptr<int> > > my = test();
+boost::shared_ptr<tuple<boost::shared_ptr<int>, boost::shared_ptr<int> > > my = test();
     cout << (*my->get<0>()) << endl;
    cout << (*my->get<1>()) << endl;
     vector<int> cc;
@@ -250,15 +250,15 @@ shared_ptr<tuple<shared_ptr<int>, shared_ptr<int> > > my = test();
     sizes[2] = 10;
     mnist_loader loader("/media/baiyu/A2FEE355FEE31FF1/mnist-dataset");
     net a(cc);
-    shared_ptr<wrapped_data> final_data = loader.load_data_wrapper();
+    boost::shared_ptr<wrapped_data> final_data = loader.load_data_wrapper();
      
 
-   // shared_ptr<training_data_container> training_data(new training_data_container);
+   // boost::shared_ptr<training_data_container> training_data(new training_data_container);
     //training_data = final_data->get<0>();
        // make_shared<training_data_container>(final_data->get<0>());
     //traing_data = 
-    shared_ptr<training_data_container> training_data = final_data->get<0>();
-    shared_ptr<test_data_container> test_data = final_data->get<2>();
+    boost::shared_ptr<training_data_container> training_data = final_data->get<0>();
+    boost::shared_ptr<test_data_container> test_data = final_data->get<2>();
     cout <<"ffffffffffffffffffff" << endl;
     cout << final_data->get<0>()->at(33333).get<0>()[333] << "fff" << endl;
     //cout << loader.load_data_wrapper()->get<2>()->at(10).get<0>()[111] << endl;;
@@ -269,11 +269,11 @@ shared_ptr<tuple<shared_ptr<int>, shared_ptr<int> > > my = test();
     //cout << training_data->size() << endl;
         //make_shared<training_data_container>(final_data->get<0>());
   //  training_data = &final_data->get<0>();
- //   shared_ptr<test_data_container> test_data =
+ //   boost::shared_ptr<test_data_container> test_data =
  //       make_shared<test_data_container>(loader.load_data_wrapper()->get<2>());
     a.stochastic_gradient_descent(training_data, 33, 10, 3.0, test_data);
     //a.stochastic_gradient_descent();
-    array<int, 4> myarray= {1, 2, 0, 9};
+    boost::array<int, 4> myarray= {1, 2, 0, 9};
     cout << myarray.size() << endl;
     cout << myarray.max_size() << endl;
     mt19937_64 rng(time(0));
@@ -285,7 +285,7 @@ shared_ptr<tuple<shared_ptr<int>, shared_ptr<int> > > my = test();
     {
         cout << ui(rng) << endl;
     }
-    array<size_t, 2> arr = {4, 3};
+    boost::array<size_t, 2> arr = {4, 3};
     multi_array<int, 2> my_multi(arr);
     int ccc = 0;
 
@@ -295,7 +295,7 @@ shared_ptr<tuple<shared_ptr<int>, shared_ptr<int> > > my = test();
         //cout << typeid(*iter).name() << endl;
         cout << (*iter)[1] << endl;
     }
-    array<int, 12> m;
+    boost::array<int, 12> m;
     m.assign(7);
     my_multi.assign<array<int, 12>::iterator>(m.begin(), m.end());
     for(int i = 0; i < 4; i++)
@@ -305,14 +305,14 @@ shared_ptr<tuple<shared_ptr<int>, shared_ptr<int> > > my = test();
     }
     cout << my_multi.num_elements() << endl;
     
- //   shared_ptr<array<int, 3> > p_a = make_shared<array<int, 3> >();
+ //   boost::shared_ptr<array<int, 3> > p_a = make_shared<array<int, 3> >();
  //   p_a->at(0) = 10;
  //   p_a->at(1) = 11;
  //   p_a->at(2) = 12;
 
  //   cout << p_a->at(1) << endl;
 
- //   shared_ptr<array<int, 3> >p_test = make_shared<array<int, 3> >();
+ //   boost::shared_ptr<array<int, 3> >p_test = make_shared<array<int, 3> >();
  //   *p_test = *p_a;
 
  //   cout << p_test->at(1) << endl;
